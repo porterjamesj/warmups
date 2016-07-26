@@ -6,8 +6,7 @@ import Control.Applicative
 
 main :: IO ()
 main = do
-  args <- getArgs
-  let dir = head args
+  (dir:_) <- getArgs
   cp dir (dir ++ ".bak")
 
 cp :: FilePath -> FilePath -> IO ()
@@ -19,7 +18,6 @@ cp src dest = do
     (False, True) -> do
       allFiles <- getDirectoryContents src
       let files = filter (`notElem` [".", ".."]) allFiles
-      let mkDir = createDirectory dest
-      let copyFiles = mapM_ (\fp -> cp (src </> fp) (dest </> fp)) files
-      mkDir *> copyFiles
+      createDirectory dest
+      mapM_ (\fp -> cp (src </> fp) (dest </> fp)) files
     _ -> error ("path does not exist:" ++ src)
